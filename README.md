@@ -6,7 +6,7 @@
 [![JSDocs][jsdocs-src]][jsdocs-href]
 [![License][license-src]][license-href]
 
-`.gitignore` and `.eslintignore` support for [ESLint Flat Configs](https://eslint.org/docs/latest/use/configure/configuration-files-new).
+`.gitignore` support for [ESLint Flat Config](https://eslint.org/docs/latest/use/configure/configuration-files-new).
 
 ## Usage
 

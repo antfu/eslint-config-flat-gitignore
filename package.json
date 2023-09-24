@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@8.7.6",
-  "description": "_description_",
+  "description": ".gitignore support for ESLint Flat Config",
   "author": "Anthony Fu <anthonyfu117@hotmail.com>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/antfu",
@@ -13,7 +13,10 @@
     "url": "git+https://github.com/antfu/eslint-config-flat-gitignore.git"
   },
   "bugs": "https://github.com/antfu/eslint-config-flat-gitignore/issues",
-  "keywords": [],
+  "keywords": [
+    "eslint-config",
+    "eslint-flat-config"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
