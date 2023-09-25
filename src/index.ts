@@ -20,15 +20,18 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
   const files = Array.isArray(_files) ? _files : [_files]
 
   for (const file of files) {
-    const content = fs.readFileSync(file, 'utf8')
-    const parsed = parse(content)
-    const globs = parsed.globs()
-    for (const glob of globs) {
-      if (glob.type === 'ignore')
-        ignores.push(...glob.patterns)
-      else if (glob.type === 'unignore')
-        ignores.push(...glob.patterns.map((pattern: string) => `!${pattern}`))
+    try {
+      const content = fs.readFileSync(file, 'utf8')
+      const parsed = parse(content)
+      const globs = parsed.globs()
+      for (const glob of globs) {
+        if (glob.type === 'ignore')
+          ignores.push(...glob.patterns)
+        else if (glob.type === 'unignore')
+          ignores.push(...glob.patterns.map((pattern: string) => `!${pattern}`))
+      }
     }
+    catch (error) {}
   }
 
   return {
