@@ -35,4 +35,18 @@ describe('should', () => {
         }
       `)
   })
+
+  it('strict (default) throw', () => {
+    expect(() => ignore({ files: 'not-exists' }))
+      .toThrow()
+  })
+
+  it('not strict skip missing file', () => {
+    expect(ignore({ files: 'not-exists', strict: false }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [],
+        }
+      `)
+  })
 })

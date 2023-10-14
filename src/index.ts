@@ -16,11 +16,20 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
 
   const {
     files: _files = '.gitignore',
+    strict = true,
   } = options
   const files = Array.isArray(_files) ? _files : [_files]
 
   for (const file of files) {
-    const content = fs.readFileSync(file, 'utf8')
+    let content: string
+    try {
+      content = fs.readFileSync(file, 'utf8')
+    }
+    catch (error) {
+      if (strict)
+        throw error
+      continue
+    }
     const parsed = parse(content)
     const globs = parsed.globs()
     for (const glob of globs) {
