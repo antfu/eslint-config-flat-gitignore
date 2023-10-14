@@ -36,6 +36,18 @@ gitignore({
 })
 ```
 
+By default, this plugin throws if any of the ignore files are missing. This can be disabled by passing setting the `strict` option to `false`.
+
+```js
+gitignore({
+  files: [
+    '.gitignore',
+    '.eslintignore',
+  ],
+  strict: false,
+})
+```
+
 ## Sponsors
 
 <p align="center">
