@@ -5,6 +5,7 @@ import parse from 'parse-gitignore'
 
 export interface FlatGitignoreOptions {
   files?: string | string[]
+  strict?: boolean
 }
 
 export interface FlatConfigItem {
