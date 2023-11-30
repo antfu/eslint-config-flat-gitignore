@@ -4,10 +4,8 @@ export default antfu(
   {
     vue: false,
     ignores: [
-      // eslint ignore globs here
     ],
   },
   {
-    // overrides
   },
 )
