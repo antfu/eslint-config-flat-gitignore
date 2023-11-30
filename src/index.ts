@@ -31,7 +31,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
         throw error
       continue
     }
-    const parsed = parse(content)
+    const parsed = parse(`${content}\n`)
     const globs = parsed.globs()
     for (const glob of globs) {
       if (glob.type === 'ignore')
