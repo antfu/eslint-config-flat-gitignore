@@ -1,0 +1,11 @@
+{
+  "name": "workspace",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "esno ./index.temp.ts"
+  },
+  "dependencies": {
+    "esno": "^4.0.0"
+  }
+}

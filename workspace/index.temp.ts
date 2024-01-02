@@ -65,3 +65,5 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     ignores,
   }
 }
+
+ignore()
