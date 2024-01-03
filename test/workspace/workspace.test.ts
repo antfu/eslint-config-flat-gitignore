@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import ignore from '../src/index'
+import ignore from '../../src/index'
 
 describe('should', () => {
+  process.chdir('test/workspace')
+
   it('exported', () => {
-    expect(ignore({ fallbackToRoot: false }))
+    expect(ignore({ fallbackToRoot: true }))
       .toMatchInlineSnapshot(`
         {
           "ignores": [
