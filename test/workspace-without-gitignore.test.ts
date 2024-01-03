@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import ignore from '../../src/index'
+import ignore from '../src/index'
 
-describe('should', () => {
-  process.chdir('test/workspace')
+describe('should execute tests in test/workspace-without-gitignore', () => {
+  process.chdir('test/workspace-without-gitignore')
 
-  it('exported', () => {
-    expect(ignore({ fallbackToRoot: true }))
+  it('should find a gitignore file', () => {
+    expect(ignore())
       .toMatchInlineSnapshot(`
         {
           "ignores": [
@@ -50,5 +50,19 @@ describe('should', () => {
           "ignores": [],
         }
       `)
+  })
+
+  it('dont fallback to root, strict and throw error', () => {
+    expect(() => ignore({ fallbackToRoot: false }))
+      .toThrow()
+  })
+
+  it('dont fallback to root, no strict and return empty array', () => {
+    expect(ignore({ strict: false, fallbackToRoot: false }))
+      .toMatchInlineSnapshot(`
+    {
+      "ignores": [],
+    }
+  `)
   })
 })

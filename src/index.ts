@@ -32,8 +32,9 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
       content = fs.readFileSync(file, 'utf8')
     }
     catch (error) {
-      const upperGitignoreFilePath = findUpSync(GITIGNORE)
+      let upperGitignoreFilePath
       if (fallbackToRoot) {
+        upperGitignoreFilePath = findUpSync(GITIGNORE)
         if (upperGitignoreFilePath) {
           try {
             content = fs.readFileSync(upperGitignoreFilePath, 'utf8')

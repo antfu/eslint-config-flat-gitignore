@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import ignore from '../src/index'
 
-describe('should', () => {
-  it('exported', () => {
+describe('should execute tests in root folder', () => {
+  it('should find a gitignore file', () => {
     expect(ignore({ fallbackToRoot: false }))
       .toMatchInlineSnapshot(`
         {
