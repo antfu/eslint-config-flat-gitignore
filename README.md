@@ -48,6 +48,14 @@ gitignore({
 })
 ```
 
+By default, if no `.gitignore` is found in the cwd then this plugin will keep searching in the upper folders, until it find one or reach the root folder. This behaviour is useful in monorepo scenarios. This can be disabled by setting the `fallbackToRoot` option to `false`.
+
+```js
+gitignore({
+  fallbackToRoot: false
+})
+```
+
 ## Sponsors
 
 <p align="center">
