@@ -45,7 +45,7 @@
     "lint": "eslint .",
     "prepublishOnly": "nr build",
     "release": "bumpp && npm publish",
-    "start": "esno src/workspace/index.temp.ts",
+    "start": "esno src/index.ts",
     "test": "vitest --pool=forks",
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
