@@ -5,9 +5,22 @@ import { findUpSync } from 'find-up'
 import parse from 'parse-gitignore'
 
 export interface FlatGitignoreOptions {
+  /**
+   * Path to `.gitignore` files, or files with compatible formats like `.eslintignore`.
+   */
   files?: string | string[]
+  /**
+   * Throw an error if gitignore file not found.
+   */
   strict?: boolean
-  fallbackToRoot?: boolean
+  /**
+   * Mark the current working directory as the root directory,
+   * disable searching for `.gitignore` files in parent directories.
+   *
+   * This option is not effective when `files` is explicitly specified.
+   * @default false
+   */
+  root?: boolean
 }
 
 export interface FlatConfigItem {
@@ -20,10 +33,11 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
   const ignores: string[] = []
 
   const {
-    files: _files = GITIGNORE,
+    root = false,
+    files: _files = root ? GITIGNORE : findUpSync(GITIGNORE) || [],
     strict = true,
-    fallbackToRoot = true,
   } = options
+
   const files = Array.isArray(_files) ? _files : [_files]
 
   for (const file of files) {
@@ -32,25 +46,9 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
       content = fs.readFileSync(file, 'utf8')
     }
     catch (error) {
-      let upperGitignoreFilePath
-      if (fallbackToRoot) {
-        upperGitignoreFilePath = findUpSync(GITIGNORE)
-        if (upperGitignoreFilePath) {
-          try {
-            content = fs.readFileSync(upperGitignoreFilePath, 'utf8')
-          }
-          catch (error) {
-            if (strict)
-              throw error
-            continue
-          }
-        }
-      }
-      if (!fallbackToRoot || !upperGitignoreFilePath) {
-        if (strict)
-          throw error
-        continue
-      }
+      if (strict)
+        throw error
+      continue
     }
     const parsed = parse(`${content}\n`)
     const globs = parsed.globs()
@@ -61,6 +59,9 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
         ignores.push(...glob.patterns.map((pattern: string) => `!${pattern}`))
     }
   }
+
+  if (strict && files.length === 0)
+    throw new Error('No .gitignore file found')
 
   return {
     ignores,

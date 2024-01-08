@@ -3,7 +3,7 @@ import ignore from '../src/index'
 
 describe('should execute tests in root folder', () => {
   it('should find a gitignore file', () => {
-    expect(ignore({ fallbackToRoot: false }))
+    expect(ignore({ root: true }))
       .toMatchInlineSnapshot(`
         {
           "ignores": [
@@ -37,12 +37,12 @@ describe('should execute tests in root folder', () => {
   })
 
   it('strict (default) throw', () => {
-    expect(() => ignore({ files: 'not-exists', fallbackToRoot: false }))
+    expect(() => ignore({ files: 'not-exists', root: true }))
       .toThrow()
   })
 
   it('not strict skip missing file', () => {
-    expect(ignore({ files: 'not-exists', strict: false, fallbackToRoot: false }))
+    expect(ignore({ files: 'not-exists', strict: false, root: true }))
       .toMatchInlineSnapshot(`
         {
           "ignores": [],

@@ -17,12 +17,12 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
   })
 
   it('strict (default) throw', () => {
-    expect(() => ignore({ files: 'not-exists', fallbackToRoot: false }))
+    expect(() => ignore({ files: 'not-exists', root: true }))
       .toThrow()
   })
 
   it('not strict skip missing file', () => {
-    expect(ignore({ files: 'not-exists', strict: false, fallbackToRoot: false }))
+    expect(ignore({ files: 'not-exists', strict: false, root: true }))
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
@@ -31,7 +31,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
   })
 
   it('should find a gitignore file in cwd', () => {
-    expect(ignore({ fallbackToRoot: false }))
+    expect(ignore({ root: true }))
       .toMatchInlineSnapshot(`
     {
       "ignores": [
@@ -43,7 +43,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
   })
 
   it('dont fallback to root, strict and return empty array', () => {
-    expect(ignore({ strict: false, fallbackToRoot: false }))
+    expect(ignore({ strict: false, root: true }))
       .toMatchInlineSnapshot(`
     {
       "ignores": [
