@@ -1,28 +1,47 @@
 import fs from 'node:fs'
+import { findUpSync } from 'find-up'
 
 // @ts-expect-error missing types
 import parse from 'parse-gitignore'
 
 export interface FlatGitignoreOptions {
+  /**
+   * Path to `.gitignore` files, or files with compatible formats like `.eslintignore`.
+   */
   files?: string | string[]
+  /**
+   * Throw an error if gitignore file not found.
+   */
   strict?: boolean
+  /**
+   * Mark the current working directory as the root directory,
+   * disable searching for `.gitignore` files in parent directories.
+   *
+   * This option is not effective when `files` is explicitly specified.
+   * @default false
+   */
+  root?: boolean
 }
 
 export interface FlatConfigItem {
   ignores: string[]
 }
 
+const GITIGNORE = '.gitignore' as const
+
 export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigItem {
   const ignores: string[] = []
 
   const {
-    files: _files = '.gitignore',
+    root = false,
+    files: _files = root ? GITIGNORE : findUpSync(GITIGNORE) || [],
     strict = true,
   } = options
+
   const files = Array.isArray(_files) ? _files : [_files]
 
   for (const file of files) {
-    let content: string
+    let content = ''
     try {
       content = fs.readFileSync(file, 'utf8')
     }
@@ -40,6 +59,9 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
         ignores.push(...glob.patterns.map((pattern: string) => `!${pattern}`))
     }
   }
+
+  if (strict && files.length === 0)
+    throw new Error('No .gitignore file found')
 
   return {
     ignores,
