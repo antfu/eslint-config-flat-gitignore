@@ -46,11 +46,12 @@
     "prepublishOnly": "nr build",
     "release": "bumpp && npm publish",
     "start": "esno src/index.ts",
-    "test": "vitest",
+    "test": "vitest --pool=forks",
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
+    "find-up": "^7.0.0",
     "parse-gitignore": "^2.0.0"
   },
   "devDependencies": {

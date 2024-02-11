@@ -48,6 +48,14 @@ gitignore({
 })
 ```
 
+By default, this plugin will try to look up the directory tree and match the first `.gitignore` file. You can disable this by setting the `root` option to `true`, or specify the `files` option to a specific path.
+
+```js
+gitignore({
+  root: true
+})
+```
+
 ## Sponsors
 
 <p align="center">
