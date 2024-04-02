@@ -32,7 +32,6 @@ describe('should execute tests in root folder', () => {
             "!temp/.gitkeep",
             "!temp/.gitkeep/**",
           ],
-          "name": "gitignore",
         }
       `)
   })
@@ -47,7 +46,6 @@ describe('should execute tests in root folder', () => {
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
-          "name": "gitignore",
         }
       `)
   })
