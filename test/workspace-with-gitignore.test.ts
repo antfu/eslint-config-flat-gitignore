@@ -12,6 +12,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "gitignoretest",
             "**/gitignoretest/**",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -26,6 +27,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
+          "name": "gitignore",
         }
       `)
   })
@@ -33,24 +35,26 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
   it('should find a gitignore file in cwd', () => {
     expect(ignore({ root: true }))
       .toMatchInlineSnapshot(`
-    {
-      "ignores": [
-        "gitignoretest",
-        "**/gitignoretest/**",
-      ],
-    }
-  `)
+        {
+          "ignores": [
+            "gitignoretest",
+            "**/gitignoretest/**",
+          ],
+          "name": "gitignore",
+        }
+      `)
   })
 
   it('dont fallback to root, strict and return empty array', () => {
     expect(ignore({ strict: false, root: true }))
       .toMatchInlineSnapshot(`
-    {
-      "ignores": [
-        "gitignoretest",
-        "**/gitignoretest/**",
-      ],
-    }
-  `)
+        {
+          "ignores": [
+            "gitignoretest",
+            "**/gitignoretest/**",
+          ],
+          "name": "gitignore",
+        }
+      `)
   })
 })

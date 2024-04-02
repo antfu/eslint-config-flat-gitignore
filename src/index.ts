@@ -6,6 +6,11 @@ import parse from 'parse-gitignore'
 
 export interface FlatGitignoreOptions {
   /**
+   * Name of the configuration.
+   * @default 'gitignore'
+   */
+  name?: string
+  /**
    * Path to `.gitignore` files, or files with compatible formats like `.eslintignore`.
    */
   files?: string | string[]
@@ -25,6 +30,7 @@ export interface FlatGitignoreOptions {
 
 export interface FlatConfigItem {
   ignores: string[]
+  name?: string
 }
 
 const GITIGNORE = '.gitignore' as const
@@ -64,6 +70,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     throw new Error('No .gitignore file found')
 
   return {
+    name: options.name || 'gitignore',
     ignores,
   }
 }
