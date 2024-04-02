@@ -70,7 +70,8 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     throw new Error('No .gitignore file found')
 
   return {
-    name: options.name || 'gitignore',
+    // TODO: ESLint does not work with names on global ignores yet
+    // name: options.name || 'gitignore',
     ignores,
   }
 }
