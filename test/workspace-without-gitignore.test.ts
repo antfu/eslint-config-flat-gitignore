@@ -34,6 +34,7 @@ describe('should execute tests in test/workspace-without-gitignore', () => {
             "!temp/.gitkeep",
             "!temp/.gitkeep/**",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -48,6 +49,7 @@ describe('should execute tests in test/workspace-without-gitignore', () => {
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
+          "name": "gitignore",
         }
       `)
   })
@@ -62,6 +64,7 @@ describe('should execute tests in test/workspace-without-gitignore', () => {
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
+          "name": "gitignore",
         }
       `)
   })

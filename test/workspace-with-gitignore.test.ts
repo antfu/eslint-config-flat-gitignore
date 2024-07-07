@@ -12,6 +12,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "gitignoretest",
             "**/gitignoretest/**",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -26,6 +27,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
+          "name": "gitignore",
         }
       `)
   })
@@ -38,6 +40,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "gitignoretest",
             "**/gitignoretest/**",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -50,6 +53,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "gitignoretest",
             "**/gitignoretest/**",
           ],
+          "name": "gitignore",
         }
       `)
   })
