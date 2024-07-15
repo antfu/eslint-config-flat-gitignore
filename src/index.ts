@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { findUpSync } from 'find-up'
+import { findUpSync } from 'find-up-simple'
 
 // @ts-expect-error missing types
 import parse from 'parse-gitignore'
