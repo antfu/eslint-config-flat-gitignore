@@ -1,4 +1,6 @@
 import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
 import { findUpSync } from 'find-up-simple'
 
 // @ts-expect-error missing types
@@ -12,10 +14,12 @@ export interface FlatGitignoreOptions {
   name?: string
   /**
    * Path to `.gitignore` files, or files with compatible formats like `.eslintignore`.
+   * @default ['.gitignore'] // or findUpSync('.gitignore')
    */
   files?: string | string[]
   /**
    * Throw an error if gitignore file not found.
+   * @default true
    */
   strict?: boolean
   /**
@@ -48,7 +52,10 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
 
   for (const file of files) {
     let content = ''
+    let dir = ''
     try {
+      dir = path.relative(process.cwd(), path.dirname(file)).replaceAll('\\', '/')
+      dir = !dir ? '' : `${dir}/`
       content = fs.readFileSync(file, 'utf8')
     }
     catch (error) {
@@ -58,11 +65,12 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     }
     const parsed = parse(`${content}\n`)
     const globs = parsed.globs()
+    const sliceStart = (pattern: string) => pattern.startsWith('/') ? pattern.slice(1) : pattern
     for (const glob of globs) {
       if (glob.type === 'ignore')
-        ignores.push(...glob.patterns)
+        ignores.push(...glob.patterns.map((pattern: string) => `${dir}${sliceStart(pattern)}`))
       else if (glob.type === 'unignore')
-        ignores.push(...glob.patterns.map((pattern: string) => `!${pattern}`))
+        ignores.push(...glob.patterns.map((pattern: string) => `!${dir}${sliceStart(pattern)}`))
     }
   }
 
