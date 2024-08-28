@@ -55,7 +55,8 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     let dir = ''
     try {
       dir = path.relative(process.cwd(), path.dirname(file)).replaceAll('\\', '/')
-      dir = !dir ? '' : `${dir}/`
+      // `..` dirs are not supported by ESLint
+      dir = !dir || dir.startsWith('..') ? '' : `${dir}/`
       content = fs.readFileSync(file, 'utf8')
     }
     catch (error) {
