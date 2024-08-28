@@ -10,3 +10,9 @@ logs
 node_modules
 temp
 !temp/.gitkeep
+
+test/.out
+!test/.in
+test/dir/file1
+!test/dir/file2
+**/test/dir/file3

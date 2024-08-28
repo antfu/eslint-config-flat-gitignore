@@ -1,8 +1,8 @@
 import fs from 'node:fs'
+import process from 'node:process'
+import path from 'node:path'
 import { findUpSync } from 'find-up-simple'
-
-// @ts-expect-error missing types
-import parse from 'parse-gitignore'
+import { convertIgnorePatternToMinimatch } from '@eslint/compat'
 
 export interface FlatGitignoreOptions {
   /**
@@ -12,10 +12,12 @@ export interface FlatGitignoreOptions {
   name?: string
   /**
    * Path to `.gitignore` files, or files with compatible formats like `.eslintignore`.
+   * @default ['.gitignore'] // or findUpSync('.gitignore')
    */
   files?: string | string[]
   /**
    * Throw an error if gitignore file not found.
+   * @default true
    */
   strict?: boolean
   /**
@@ -26,6 +28,13 @@ export interface FlatGitignoreOptions {
    * @default false
    */
   root?: boolean
+
+  /**
+   * Current working directory.
+   * Used to resolve relative paths.
+   * @default process.cwd()
+   */
+  cwd?: string
 }
 
 export interface FlatConfigItem {
@@ -42,6 +51,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     root = false,
     files: _files = root ? GITIGNORE : findUpSync(GITIGNORE) || [],
     strict = true,
+    cwd = process.cwd(),
   } = options
 
   const files = Array.isArray(_files) ? _files : [_files]
@@ -56,14 +66,14 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
         throw error
       continue
     }
-    const parsed = parse(`${content}\n`)
-    const globs = parsed.globs()
-    for (const glob of globs) {
-      if (glob.type === 'ignore')
-        ignores.push(...glob.patterns)
-      else if (glob.type === 'unignore')
-        ignores.push(...glob.patterns.map((pattern: string) => `!${pattern}`))
-    }
+    const relativePath = path.relative(cwd, path.dirname(file)).replaceAll('\\', '/')
+    const globs = content.split(/\r?\n/u)
+      .filter(line => line && !line.startsWith('#'))
+      .map(line => convertIgnorePatternToMinimatch(line))
+      .map(glob => relativyMinimatch(glob, relativePath, cwd))
+      .filter(glob => glob !== null)
+
+    ignores.push(...globs)
   }
 
   if (strict && files.length === 0)
@@ -74,4 +84,48 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     // name: options.name || 'gitignore',
     ignores,
   }
+}
+
+function relativyMinimatch(pattern: string, relativePath: string, cwd: string) {
+  // if gitignore is in the current directory leave it as is
+  if (['', '.', '/'].includes(relativePath))
+    return pattern
+
+  const negated = pattern.startsWith('!') ? '!' : ''
+  let cleanPattern = negated ? pattern.slice(1) : pattern
+
+  if (!relativePath.endsWith('/'))
+    relativePath = `${relativePath}/`
+
+  const isParent = relativePath.startsWith('..')
+  // child directories need to just add path in start
+  if (!isParent)
+    return `${negated}${relativePath}${cleanPattern}`
+
+  // uncle directories don't make sence
+  if (!relativePath.match(/^(\.\.\/)+$/))
+    throw new Error('The ignore file location should be either a parent or child directory')
+
+  // if it has ** depth it may be left as is
+  if (cleanPattern.startsWith('**'))
+    return pattern
+
+  // if glob doesn't match the parent dirs it should be ignored
+  const parents = path.relative(path.resolve(cwd, relativePath), cwd).split(/[/\\]/)
+
+  while (parents.length && cleanPattern.startsWith(`${parents[0]}/`)) {
+    cleanPattern = cleanPattern.slice(parents[0].length + 1)
+    parents.shift()
+  }
+
+  // if it has ** depth it may be left as is
+  if (cleanPattern.startsWith('**'))
+    return `${negated}${cleanPattern}`
+
+  // if all parents are out, it's clean
+  if (parents.length === 0)
+    return `${negated}${cleanPattern}`
+
+  // otherwise it doesn't matches the current folder
+  return null
 }
