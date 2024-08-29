@@ -70,7 +70,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     const globs = content.split(/\r?\n/u)
       .filter(line => line && !line.startsWith('#'))
       .map(line => convertIgnorePatternToMinimatch(line))
-      .map(glob => relativyMinimatch(glob, relativePath, cwd))
+      .map(glob => relativeMinimatch(glob, relativePath, cwd))
       .filter(glob => glob !== null)
 
     ignores.push(...globs)
@@ -80,13 +80,12 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     throw new Error('No .gitignore file found')
 
   return {
-    // `name` is still not working well in ESLint v8
-    // name: options.name || 'gitignore',
+    name: options.name || 'gitignore',
     ignores,
   }
 }
 
-function relativyMinimatch(pattern: string, relativePath: string, cwd: string) {
+function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
   // if gitignore is in the current directory leave it as is
   if (['', '.', '/'].includes(relativePath))
     return pattern
