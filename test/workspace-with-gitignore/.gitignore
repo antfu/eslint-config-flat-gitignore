@@ -1,1 +1,7 @@
-gitignoretest
+/rootfile
+/rootdir/
+rootpath
+
+/rootfolder/file
+/rootfolder/dir/
+/rootfolder/path

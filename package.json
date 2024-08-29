@@ -51,8 +51,8 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "find-up-simple": "^1.0.0",
-    "parse-gitignore": "^2.0.0"
+    "@eslint/compat": "^1.1.1",
+    "find-up-simple": "^1.0.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.22.3",
