@@ -25,6 +25,7 @@ describe('should execute tests in root folder', () => {
             "!test/dir/file2",
             "**/test/dir/file3",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -39,6 +40,7 @@ describe('should execute tests in root folder', () => {
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
+          "name": "gitignore",
         }
       `)
   })

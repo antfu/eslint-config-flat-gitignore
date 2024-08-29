@@ -16,6 +16,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "rootfolder/dir/",
             "rootfolder/path",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -30,6 +31,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
       .toMatchInlineSnapshot(`
         {
           "ignores": [],
+          "name": "gitignore",
         }
       `)
   })
@@ -46,6 +48,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "rootfolder/dir/",
             "rootfolder/path",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -62,6 +65,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "rootfolder/dir/",
             "rootfolder/path",
           ],
+          "name": "gitignore",
         }
       `)
   })
@@ -90,6 +94,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "folder/dir/",
             "folder/**/path",
           ],
+          "name": "gitignore",
         }
       `)
   })

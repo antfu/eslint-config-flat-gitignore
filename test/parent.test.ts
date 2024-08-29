@@ -25,6 +25,7 @@ describe('should execute tests in subfolder', () => {
             "!dir/file2",
             "**/test/dir/file3",
           ],
+          "name": "gitignore",
         }
       `)
   })
