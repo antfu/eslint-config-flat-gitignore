@@ -1,8 +1,8 @@
 import fs from 'node:fs'
-import process from 'node:process'
 import path from 'node:path'
-import { findUpSync } from 'find-up-simple'
+import process from 'node:process'
 import { convertIgnorePatternToMinimatch } from '@eslint/compat'
+import { findUpSync } from 'find-up-simple'
 
 export interface FlatGitignoreOptions {
   /**
