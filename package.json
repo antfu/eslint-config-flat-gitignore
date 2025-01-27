@@ -54,8 +54,7 @@
     "eslint": "^9.5.0"
   },
   "dependencies": {
-    "@eslint/compat": "^1.2.4",
-    "find-up-simple": "^1.0.0"
+    "@eslint/compat": "^1.2.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.2",

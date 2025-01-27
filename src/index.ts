@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { convertIgnorePatternToMinimatch } from '@eslint/compat'
-import { findUpSync } from 'find-up-simple'
 
 export interface FlatGitignoreOptions {
   /**
@@ -127,4 +126,24 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
 
   // otherwise it doesn't matches the current folder
   return null
+}
+
+function findUpSync(name: string, { cwd = process.cwd() } = {}) {
+  let directory = path.resolve(cwd)
+  const { root } = path.parse(directory)
+
+  while (directory && directory !== root) {
+    const filePath = path.isAbsolute(name) ? name : path.join(directory, name)
+
+    try {
+      const stats = fs.statSync(filePath)
+
+      if (stats.isFile()) {
+        return filePath
+      }
+    }
+    catch {}
+
+    directory = path.dirname(directory)
+  }
 }
