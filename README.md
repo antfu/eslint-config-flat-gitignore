@@ -56,6 +56,16 @@ gitignore({
 })
 ```
 
+This plugin will also automatically detect git submodule file `.gitmodules` and ignore all files under the submodule dirs. If you want to disable or customize this behavior, you can pass the `filesGitModules` option.
+
+<!-- eslint-skip -->
+```js
+gitignore({
+  filesGitModules: [], // disable
+  filesGitModules: ['path/to/.gitmodules'], // customize
+})
+```
+
 ## Sponsors
 
 <p align="center">

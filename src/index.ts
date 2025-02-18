@@ -1,7 +1,9 @@
 import fs from 'node:fs'
-import path from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import process from 'node:process'
+import { toArray } from '@antfu/utils'
 import { convertIgnorePatternToMinimatch } from '@eslint/compat'
+import { findUpSync } from 'find-up-simple'
 
 export interface FlatGitignoreOptions {
   /**
@@ -9,16 +11,25 @@ export interface FlatGitignoreOptions {
    * @default 'gitignore'
    */
   name?: string
+
   /**
    * Path to `.gitignore` files, or files with compatible formats like `.eslintignore`.
    * @default ['.gitignore'] // or findUpSync('.gitignore')
    */
   files?: string | string[]
+
+  /**
+   * Path to `.gitmodules` file.
+   * @default ['.gitmodules'] // or findUpSync('.gitmodules')
+   */
+  filesGitModules?: string | string[]
+
   /**
    * Throw an error if gitignore file not found.
    * @default true
    */
   strict?: boolean
+
   /**
    * Mark the current working directory as the root directory,
    * disable searching for `.gitignore` files in parent directories.
@@ -42,18 +53,23 @@ export interface FlatConfigItem {
 }
 
 const GITIGNORE = '.gitignore' as const
+const GITMODULES = '.gitmodules' as const
 
 export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigItem {
   const ignores: string[] = []
 
   const {
-    root = false,
-    files: _files = root ? GITIGNORE : findUpSync(GITIGNORE) || [],
-    strict = true,
     cwd = process.cwd(),
+    root = false,
+    files: _files = root ? GITIGNORE : findUpSync(GITIGNORE, { cwd }) || [],
+    filesGitModules: _filesGitModules = root
+      ? (fs.existsSync(join(cwd, GITMODULES)) ? GITMODULES : [])
+      : findUpSync(GITMODULES, { cwd }) || [],
+    strict = true,
   } = options
 
-  const files = Array.isArray(_files) ? _files : [_files]
+  const files = toArray(_files).map(file => resolve(cwd, file))
+  const filesGitModules = toArray(_filesGitModules).map(file => resolve(cwd, file))
 
   for (const file of files) {
     let content = ''
@@ -65,7 +81,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
         throw error
       continue
     }
-    const relativePath = path.relative(cwd, path.dirname(file)).replaceAll('\\', '/')
+    const relativePath = relative(cwd, dirname(file)).replaceAll('\\', '/')
     const globs = content.split(/\r?\n/u)
       .filter(line => line && !line.startsWith('#'))
       .map(line => convertIgnorePatternToMinimatch(line))
@@ -73,6 +89,20 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
       .filter(glob => glob !== null)
 
     ignores.push(...globs)
+  }
+
+  for (const file of filesGitModules) {
+    let content = ''
+    try {
+      content = fs.readFileSync(file, 'utf8')
+    }
+    catch (error) {
+      if (strict)
+        throw error
+      continue
+    }
+    const dirs = parseGitSubmodules(content)
+    ignores.push(...dirs.map(dir => `${dir}/**`))
   }
 
   if (strict && files.length === 0)
@@ -100,7 +130,7 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
   if (!isParent)
     return `${negated}${relativePath}${cleanPattern}`
 
-  // uncle directories don't make sence
+  // uncle directories don't make sense
   if (!relativePath.match(/^(\.\.\/)+$/))
     throw new Error('The ignore file location should be either a parent or child directory')
 
@@ -109,7 +139,7 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
     return pattern
 
   // if glob doesn't match the parent dirs it should be ignored
-  const parents = path.relative(path.resolve(cwd, relativePath), cwd).split(/[/\\]/)
+  const parents = relative(resolve(cwd, relativePath), cwd).split(/[/\\]/)
 
   while (parents.length && cleanPattern.startsWith(`${parents[0]}/`)) {
     cleanPattern = cleanPattern.slice(parents[0].length + 1)
@@ -128,22 +158,9 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
   return null
 }
 
-function findUpSync(name: string, { cwd = process.cwd() } = {}) {
-  let directory = path.resolve(cwd)
-  const { root } = path.parse(directory)
-
-  while (directory && directory !== root) {
-    const filePath = path.isAbsolute(name) ? name : path.join(directory, name)
-
-    try {
-      const stats = fs.statSync(filePath)
-
-      if (stats.isFile()) {
-        return filePath
-      }
-    }
-    catch {}
-
-    directory = path.dirname(directory)
-  }
+function parseGitSubmodules(content: string): string[] {
+  return content.split(/\r?\n/u)
+    .map(line => line.match(/path\s*=\s*(.+)/u))
+    .filter(match => match !== null)
+    .map(match => match![1].trim())
 }

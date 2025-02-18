@@ -33,6 +33,9 @@ importers:
       esno:
         specifier: ^4.8.0
         version: 4.8.0
+      find-up-simple:
+        specifier: ^1.0.0
+        version: 1.0.0
       lint-staged:
         specifier: ^15.4.3
         version: 15.4.3

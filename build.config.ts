@@ -4,6 +4,12 @@ export default defineBuildConfig({
   entries: [
     'src/index',
   ],
-  declaration: true,
+  declaration: 'node16',
   clean: true,
+  rollup: {
+    inlineDependencies: [
+      'find-up-simple',
+      '@antfu/utils',
+    ],
+  },
 })

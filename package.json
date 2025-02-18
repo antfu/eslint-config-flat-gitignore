@@ -19,22 +19,11 @@
   ],
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.mts",
-      "default": "./dist/index.mjs"
-    }
+    ".": "./dist/index.mjs"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./dist/index.d.ts"
-      ]
-    }
-  },
   "files": [
     "dist"
   ],
@@ -43,7 +32,7 @@
     "dev": "unbuild --stub",
     "lint": "eslint .",
     "prepublishOnly": "nr build",
-    "release": "bumpp && npm publish",
+    "release": "bumpp && pnpm publish",
     "start": "esno src/index.ts",
     "test": "vitest --pool=forks",
     "typecheck": "tsc --noEmit",
@@ -63,6 +52,7 @@
     "bumpp": "^10.0.1",
     "eslint": "^9.19.0",
     "esno": "^4.8.0",
+    "find-up-simple": "^1.0.0",
     "lint-staged": "^15.4.3",
     "pnpm": "^9.15.4",
     "simple-git-hooks": "^2.11.1",
