@@ -39,18 +39,18 @@
     "prepare": "simple-git-hooks"
   },
   "peerDependencies": {
-    "eslint": "^9.5.0"
+    "eslint": "^9.5.0 || ^10.0.0"
   },
   "dependencies": {
-    "@eslint/compat": "^1.2.5"
+    "@eslint/compat": "^2.0.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.1.0",
+    "@antfu/eslint-config": "^7.4.3",
     "@antfu/ni": "^23.3.0",
     "@antfu/utils": "^8.1.0",
     "@types/node": "^22.12.0",
     "bumpp": "^10.0.1",
-    "eslint": "^9.19.0",
+    "eslint": "^10.0.0",
     "esno": "^4.8.0",
     "find-up-simple": "^1.0.0",
     "lint-staged": "^15.4.3",
