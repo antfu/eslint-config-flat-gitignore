@@ -130,10 +130,6 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
   if (!isParent)
     return `${negated}${relativePath}${cleanPattern}`
 
-  // uncle directories don't make sense
-  if (!relativePath.match(/^(\.\.\/)+$/))
-    throw new Error('The ignore file location should be either a parent or child directory')
-
   // if it has ** depth it may be left as is
   if (cleanPattern.startsWith('**'))
     return pattern
