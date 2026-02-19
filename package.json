@@ -1,7 +1,7 @@
 {
   "name": "eslint-config-flat-gitignore",
   "type": "module",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "packageManager": "pnpm@10.30.0",
   "description": ".gitignore support for ESLint Flat Config",
   "author": "Anthony Fu <anthonyfu117@hotmail.com>",
