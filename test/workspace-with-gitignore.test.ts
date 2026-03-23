@@ -99,6 +99,39 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
       `)
   })
 
+  it('should work properly with recursive gitignore with deeper level', () => {
+    expect(ignore({
+      files: [
+        '.gitignore',
+        'folder/.gitignore',
+        'folder/level-one/.gitignore',
+        'folder/level-one/level-two/.gitignore',
+      ],
+    }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [
+            "rootfile",
+            "rootdir/",
+            "**/rootpath",
+            "rootfolder/file",
+            "rootfolder/dir/",
+            "rootfolder/path",
+            "folder/file",
+            "folder/dir/",
+            "folder/**/path",
+            "folder/level-one/level-one-file",
+            "folder/level-one/level-one-dir/",
+            "folder/level-one/**/level-one-path",
+            "folder/level-one/level-two/level-two-file",
+            "folder/level-one/level-two/level-two-dir/",
+            "folder/level-one/level-two/**/level-two-path",
+          ],
+          "name": "gitignore",
+        }
+      `)
+  })
+
   it('should discover recursive gitignore files automatically', () => {
     expect(ignore({ recursive: true }))
       .toMatchInlineSnapshot(`
@@ -113,6 +146,12 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "folder/file",
             "folder/dir/",
             "folder/**/path",
+            "folder/level-one/level-one-file",
+            "folder/level-one/level-one-dir/",
+            "folder/level-one/**/level-one-path",
+            "folder/level-one/level-two/level-two-file",
+            "folder/level-one/level-two/level-two-dir/",
+            "folder/level-one/level-two/**/level-two-path",
           ],
           "name": "gitignore",
         }
