@@ -70,7 +70,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
       `)
   })
 
-  it('should work properly with nested gitignore', () => {
+  it('should work properly with recursive gitignore', () => {
     /**
      * https://git-scm.com/docs/gitignore#_pattern_format
      * If there is a separator at the beginning or middle (or both) of the pattern,
@@ -81,6 +81,26 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
      * otherwise the pattern can match both files and directories.
      */
     expect(ignore({ files: ['.gitignore', 'folder/.gitignore'] }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [
+            "rootfile",
+            "rootdir/",
+            "**/rootpath",
+            "rootfolder/file",
+            "rootfolder/dir/",
+            "rootfolder/path",
+            "folder/file",
+            "folder/dir/",
+            "folder/**/path",
+          ],
+          "name": "gitignore",
+        }
+      `)
+  })
+
+  it('should discover recursive gitignore files automatically', () => {
+    expect(ignore({ recursive: true }))
       .toMatchInlineSnapshot(`
         {
           "ignores": [

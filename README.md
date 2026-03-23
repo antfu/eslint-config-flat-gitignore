@@ -56,6 +56,14 @@ gitignore({
 })
 ```
 
+If you want to include recursive `.gitignore` files (for example in monorepos), enable the `recursive` option.
+
+```js
+gitignore({
+  recursive: true,
+})
+```
+
 This plugin will also automatically detect git submodule file `.gitmodules` and ignore all files under the submodule dirs. If you want to disable or customize this behavior, you can pass the `filesGitModules` option.
 
 <!-- eslint-skip -->

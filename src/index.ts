@@ -45,6 +45,15 @@ export interface FlatGitignoreOptions {
    * @default process.cwd()
    */
   cwd?: string
+
+  /**
+   * Also include recursive `.gitignore` files under `cwd`.
+   *
+   * This option is useful for monorepos or projects that keep
+   * per-folder `.gitignore` files.
+   * @default false
+   */
+  recursive?: boolean
 }
 
 export interface FlatConfigItem {
@@ -61,6 +70,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
   const {
     cwd = process.cwd(),
     root = false,
+    recursive = false,
     files: _files = root ? GITIGNORE : findUpSync(GITIGNORE, { cwd }) || [],
     filesGitModules: _filesGitModules = root
       ? (fs.existsSync(join(cwd, GITMODULES)) ? GITMODULES : [])
@@ -68,10 +78,16 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     strict = true,
   } = options
 
-  const files = toArray(_files).map(file => resolve(cwd, file))
+  const files = new Set(toArray(_files).map(file => resolve(cwd, file)))
+  if (recursive) {
+    for (const file of findNestedFiles(cwd, GITIGNORE))
+      files.add(file)
+  }
+
+  const filesList = [...files]
   const filesGitModules = toArray(_filesGitModules).map(file => resolve(cwd, file))
 
-  for (const file of files) {
+  for (const file of filesList) {
     let content = ''
     try {
       content = fs.readFileSync(file, 'utf8')
@@ -105,13 +121,35 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
     ignores.push(...dirs.map(dir => `${dir}/**`))
   }
 
-  if (strict && files.length === 0)
+  if (strict && filesList.length === 0)
     throw new Error('No .gitignore file found')
 
   return {
     name: options.name || 'gitignore',
     ignores,
   }
+}
+
+function findNestedFiles(cwd: string, fileName: string): string[] {
+  const files: string[] = []
+  const directoriesToSkip = new Set(['.git', 'node_modules'])
+  const queue = [cwd]
+
+  while (queue.length) {
+    const directory = queue.shift()!
+    const entries = fs.readdirSync(directory, { withFileTypes: true })
+
+    for (const entry of entries) {
+      const absolutePath = join(directory, entry.name)
+      if (entry.isFile() && entry.name === fileName)
+        files.push(absolutePath)
+
+      if (entry.isDirectory() && !directoriesToSkip.has(entry.name))
+        queue.push(absolutePath)
+    }
+  }
+
+  return files
 }
 
 function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
