@@ -51,9 +51,14 @@ export interface FlatGitignoreOptions {
    *
    * This option is useful for monorepos or projects that keep
    * per-folder `.gitignore` files.
+   *
+   * Pass `{ skipDirs: ['name'] }` to skip directory names while
+   * scanning recursively. `skipDirs` matches by directory name at
+   * any depth (not by path), and is applied in addition to `.git`
+   * and `node_modules`.
    * @default false
    */
-  recursive?: boolean
+  recursive?: boolean | { skipDirs: string[] }
 }
 
 export interface FlatConfigItem {
@@ -80,7 +85,10 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
 
   const files = new Set(toArray(_files).map(file => resolve(cwd, file)))
   if (recursive) {
-    for (const file of findNestedFiles(cwd, GITIGNORE))
+    const additionalIgnoreDirs = typeof recursive === 'boolean'
+      ? []
+      : recursive.skipDirs
+    for (const file of findNestedFiles(cwd, GITIGNORE, additionalIgnoreDirs))
       files.add(file)
   }
 
@@ -130,9 +138,9 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
   }
 }
 
-function findNestedFiles(cwd: string, fileName: string): string[] {
+function findNestedFiles(cwd: string, fileName: string, additionalIgnoreDirs: string[]): string[] {
   const files: string[] = []
-  const directoriesToSkip = new Set(['.git', 'node_modules'])
+  const directoriesToSkip = new Set(['.git', 'node_modules', ...additionalIgnoreDirs])
   const queue = [cwd]
 
   while (queue.length) {

@@ -157,4 +157,41 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
         }
       `)
   })
+
+  it('should support recursive ignore directories by name', () => {
+    expect(ignore({ recursive: { skipDirs: ['level-one'] } }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [
+            "rootfile",
+            "rootdir/",
+            "**/rootpath",
+            "rootfolder/file",
+            "rootfolder/dir/",
+            "rootfolder/path",
+            "folder/file",
+            "folder/dir/",
+            "folder/**/path",
+          ],
+          "name": "gitignore",
+        }
+      `)
+  })
+
+  it('should skip an entire recursive subtree by directory name', () => {
+    expect(ignore({ recursive: { skipDirs: ['folder'] } }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [
+            "rootfile",
+            "rootdir/",
+            "**/rootpath",
+            "rootfolder/file",
+            "rootfolder/dir/",
+            "rootfolder/path",
+          ],
+          "name": "gitignore",
+        }
+      `)
+  })
 })
