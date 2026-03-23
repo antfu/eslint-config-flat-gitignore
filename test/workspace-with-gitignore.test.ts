@@ -80,26 +80,6 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
      * If there is a separator at the end of the pattern then the pattern will only match directories,
      * otherwise the pattern can match both files and directories.
      */
-    expect(ignore({ files: ['.gitignore', 'folder/.gitignore'] }))
-      .toMatchInlineSnapshot(`
-        {
-          "ignores": [
-            "rootfile",
-            "rootdir/",
-            "**/rootpath",
-            "rootfolder/file",
-            "rootfolder/dir/",
-            "rootfolder/path",
-            "folder/file",
-            "folder/dir/",
-            "folder/**/path",
-          ],
-          "name": "gitignore",
-        }
-      `)
-  })
-
-  it('should work properly with recursive gitignore with deeper level', () => {
     expect(ignore({
       files: [
         '.gitignore',
@@ -156,6 +136,17 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
           "name": "gitignore",
         }
       `)
+  })
+
+  it('should work the same way for recursive and manual input all files', () => {
+    expect(ignore({
+      files: [
+        '.gitignore',
+        'folder/.gitignore',
+        'folder/level-one/.gitignore',
+        'folder/level-one/level-two/.gitignore',
+      ],
+    })).toEqual(ignore({ recursive: true }))
   })
 
   it('should support recursive ignore directories by name', () => {
