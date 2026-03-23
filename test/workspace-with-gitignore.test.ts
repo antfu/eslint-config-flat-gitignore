@@ -70,7 +70,7 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
       `)
   })
 
-  it('should work properly with recursive gitignore', () => {
+  it('should work properly with nested gitignore', () => {
     /**
      * https://git-scm.com/docs/gitignore#_pattern_format
      * If there is a separator at the beginning or middle (or both) of the pattern,
