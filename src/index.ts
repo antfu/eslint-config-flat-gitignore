@@ -69,6 +69,11 @@ export interface FlatConfigItem {
 const GITIGNORE = '.gitignore' as const
 const GITMODULES = '.gitmodules' as const
 
+const RE_NEWLINE = /\r?\n/u
+const RE_PARENT_PATH = /^(?:\.\.\/)+$/
+const RE_PATH_SEP = /[/\\]/
+const RE_SUBMODULE_PATH = /path\s*=\s*(.+)/u
+
 export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigItem {
   const ignores: string[] = []
 
@@ -106,7 +111,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
       continue
     }
     const relativePath = relative(cwd, dirname(file)).replaceAll('\\', '/')
-    const globs = content.split(/\r?\n/u)
+    const globs = content.split(RE_NEWLINE)
       .filter(line => line && !line.startsWith('#'))
       .map(line => convertIgnorePatternToMinimatch(line))
       .map(glob => relativeMinimatch(glob, relativePath, cwd))
@@ -177,7 +182,7 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
     return `${negated}${relativePath}${cleanPattern}`
 
   // uncle directories don't make sense
-  if (!relativePath.match(/^(\.\.\/)+$/))
+  if (!RE_PARENT_PATH.test(relativePath))
     throw new Error('The ignore file location should be either a parent or child directory')
 
   // if it has ** depth it may be left as is
@@ -185,7 +190,7 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
     return pattern
 
   // if glob doesn't match the parent dirs it should be ignored
-  const parents = relative(resolve(cwd, relativePath), cwd).split(/[/\\]/)
+  const parents = relative(resolve(cwd, relativePath), cwd).split(RE_PATH_SEP)
 
   while (parents.length && cleanPattern.startsWith(`${parents[0]}/`)) {
     cleanPattern = cleanPattern.slice(parents[0].length + 1)
@@ -205,8 +210,8 @@ function relativeMinimatch(pattern: string, relativePath: string, cwd: string) {
 }
 
 function parseGitSubmodules(content: string): string[] {
-  return content.split(/\r?\n/u)
-    .map(line => line.match(/path\s*=\s*(.+)/u))
+  return content.split(RE_NEWLINE)
+    .map(line => RE_SUBMODULE_PATH.exec(line))
     .filter(match => match !== null)
     .map(match => match![1].trim())
 }
