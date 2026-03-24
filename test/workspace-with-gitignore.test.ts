@@ -80,7 +80,14 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
      * If there is a separator at the end of the pattern then the pattern will only match directories,
      * otherwise the pattern can match both files and directories.
      */
-    expect(ignore({ files: ['.gitignore', 'folder/.gitignore'] }))
+    expect(ignore({
+      files: [
+        '.gitignore',
+        'folder/.gitignore',
+        'folder/level-one/.gitignore',
+        'folder/level-one/level-two/.gitignore',
+      ],
+    }))
       .toMatchInlineSnapshot(`
         {
           "ignores": [
@@ -93,6 +100,86 @@ describe('should execute tests in test/workspace-with-gitignore', () => {
             "folder/file",
             "folder/dir/",
             "folder/**/path",
+            "folder/level-one/level-one-file",
+            "folder/level-one/level-one-dir/",
+            "folder/level-one/**/level-one-path",
+            "folder/level-one/level-two/level-two-file",
+            "folder/level-one/level-two/level-two-dir/",
+            "folder/level-one/level-two/**/level-two-path",
+          ],
+          "name": "gitignore",
+        }
+      `)
+  })
+
+  it('should discover recursive gitignore files automatically', () => {
+    expect(ignore({ recursive: true }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [
+            "rootfile",
+            "rootdir/",
+            "**/rootpath",
+            "rootfolder/file",
+            "rootfolder/dir/",
+            "rootfolder/path",
+            "folder/file",
+            "folder/dir/",
+            "folder/**/path",
+            "folder/level-one/level-one-file",
+            "folder/level-one/level-one-dir/",
+            "folder/level-one/**/level-one-path",
+            "folder/level-one/level-two/level-two-file",
+            "folder/level-one/level-two/level-two-dir/",
+            "folder/level-one/level-two/**/level-two-path",
+          ],
+          "name": "gitignore",
+        }
+      `)
+  })
+
+  it('should work the same way for recursive and manual input all files', () => {
+    expect(ignore({
+      files: [
+        '.gitignore',
+        'folder/.gitignore',
+        'folder/level-one/.gitignore',
+        'folder/level-one/level-two/.gitignore',
+      ],
+    })).toEqual(ignore({ recursive: true }))
+  })
+
+  it('should support recursive ignore directories by name', () => {
+    expect(ignore({ recursive: { skipDirs: ['level-one'] } }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [
+            "rootfile",
+            "rootdir/",
+            "**/rootpath",
+            "rootfolder/file",
+            "rootfolder/dir/",
+            "rootfolder/path",
+            "folder/file",
+            "folder/dir/",
+            "folder/**/path",
+          ],
+          "name": "gitignore",
+        }
+      `)
+  })
+
+  it('should skip an entire recursive subtree by directory name', () => {
+    expect(ignore({ recursive: { skipDirs: ['folder'] } }))
+      .toMatchInlineSnapshot(`
+        {
+          "ignores": [
+            "rootfile",
+            "rootdir/",
+            "**/rootpath",
+            "rootfolder/file",
+            "rootfolder/dir/",
+            "rootfolder/path",
           ],
           "name": "gitignore",
         }

@@ -56,6 +56,27 @@ gitignore({
 })
 ```
 
+If you want to include recursive `.gitignore` files (for example in monorepos), enable the `recursive` option.
+
+```js
+gitignore({
+  recursive: true,
+})
+```
+
+If you want recursive discovery but need to skip specific directory names, pass an object to `recursive` with `skipDirs`.
+
+```js
+gitignore({
+  recursive: {
+    // Skip any directory with this name at any depth
+    skipDirs: ['dist', 'coverage'],
+  },
+})
+```
+
+`skipDirs` matches directory names (not paths) and applies in addition to the built-in skipped directories: `.git` and `node_modules`.
+
 This plugin will also automatically detect git submodule file `.gitmodules` and ignore all files under the submodule dirs. If you want to disable or customize this behavior, you can pass the `filesGitModules` option.
 
 <!-- eslint-skip -->
