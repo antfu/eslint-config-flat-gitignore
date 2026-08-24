@@ -100,6 +100,22 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
   const filesList = [...files]
   const filesGitModules = toArray(_filesGitModules).map(file => resolve(cwd, file))
 
+  if (!('files' in options) && !root && filesList.length > 0) {
+    const gitDir = findClosestGitDir(cwd)
+    if (gitDir) {
+      let content = ''
+      try {
+        content = fs.readFileSync(join(gitDir, 'info/exclude'), 'utf8')
+      }
+      catch {
+        // .git/info/exclude missing is normal, never propagate
+      }
+      if (content) {
+        ignores.push(...parseIgnoreContent(content, '', cwd))
+      }
+    }
+  }
+
   for (const file of filesList) {
     let content = ''
     try {
@@ -216,4 +232,16 @@ function parseIgnoreContent(content: string, relativePath: string, cwd: string):
     .map(line => convertIgnorePatternToMinimatch(line))
     .map(glob => relativeMinimatch(glob, relativePath, cwd))
     .filter((glob): glob is string => glob !== null)
+}
+
+function findClosestGitDir(cwd: string): string | undefined {
+  let dir = cwd
+  while (true) {
+    if (fs.existsSync(join(dir, '.git')))
+      return join(dir, '.git')
+    const parent = dirname(dir)
+    if (parent === dir)
+      return undefined
+    dir = parent
+  }
 }
