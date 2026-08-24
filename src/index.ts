@@ -111,13 +111,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
       continue
     }
     const relativePath = relative(cwd, dirname(file)).replaceAll('\\', '/')
-    const globs = content.split(RE_NEWLINE)
-      .filter(line => line && !line.startsWith('#'))
-      .map(line => convertIgnorePatternToMinimatch(line))
-      .map(glob => relativeMinimatch(glob, relativePath, cwd))
-      .filter(glob => glob !== null)
-
-    ignores.push(...globs)
+    ignores.push(...parseIgnoreContent(content, relativePath, cwd))
   }
 
   for (const file of filesGitModules) {
@@ -214,4 +208,12 @@ function parseGitSubmodules(content: string): string[] {
     .map(line => RE_SUBMODULE_PATH.exec(line))
     .filter(match => match !== null)
     .map(match => match![1].trim())
+}
+
+function parseIgnoreContent(content: string, relativePath: string, cwd: string): string[] {
+  return content.split(RE_NEWLINE)
+    .filter(line => line && !line.startsWith('#'))
+    .map(line => convertIgnorePatternToMinimatch(line))
+    .map(glob => relativeMinimatch(glob, relativePath, cwd))
+    .filter((glob): glob is string => glob !== null)
 }
