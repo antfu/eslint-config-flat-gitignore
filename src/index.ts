@@ -103,15 +103,12 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
   if (!('files' in options) && !root && filesList.length > 0) {
     const gitDir = findClosestGitDir(cwd)
     if (gitDir) {
-      let content = ''
-      try {
-        content = fs.readFileSync(join(gitDir, 'info/exclude'), 'utf8')
-      }
-      catch {
-        // .git/info/exclude missing is normal, never propagate
-      }
-      if (content) {
-        ignores.push(...parseIgnoreContent(content, '', cwd))
+      const infoExcludePath = join(gitDir, 'info/exclude')
+      if (fs.existsSync(infoExcludePath)) {
+        const content = fs.readFileSync(infoExcludePath, 'utf8')
+        if (content) {
+          ignores.push(...parseIgnoreContent(content, '', cwd))
+        }
       }
     }
   }
