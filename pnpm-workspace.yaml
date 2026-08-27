@@ -1,9 +1,14 @@
+minimumReleaseAgeExclude:
+  - '@types/node@26.4.0'
+  - bumpp@12.2.2
 shellEmulator: true
-
 trustPolicy: no-downgrade
 packages:
   - playground
   - examples/*
-onlyBuiltDependencies:
-  - esbuild
-  - simple-git-hooks
+update:
+  ignoreDeps:
+    - typescript@7
+allowBuilds:
+  esbuild: true
+  simple-git-hooks: true
