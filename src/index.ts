@@ -100,6 +100,19 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
   const filesList = [...files]
   const filesGitModules = toArray(_filesGitModules).map(file => resolve(cwd, file))
 
+  if (!('files' in options) && !root && filesList.length > 0) {
+    const gitDir = findClosestGitDir(cwd)
+    if (gitDir) {
+      const infoExcludePath = join(gitDir, 'info/exclude')
+      if (fs.existsSync(infoExcludePath)) {
+        const content = fs.readFileSync(infoExcludePath, 'utf8')
+        if (content) {
+          ignores.push(...parseIgnoreContent(content, '', cwd))
+        }
+      }
+    }
+  }
+
   for (const file of filesList) {
     let content = ''
     try {
@@ -111,13 +124,7 @@ export default function ignore(options: FlatGitignoreOptions = {}): FlatConfigIt
       continue
     }
     const relativePath = relative(cwd, dirname(file)).replaceAll('\\', '/')
-    const globs = content.split(RE_NEWLINE)
-      .filter(line => line && !line.startsWith('#'))
-      .map(line => convertIgnorePatternToMinimatch(line))
-      .map(glob => relativeMinimatch(glob, relativePath, cwd))
-      .filter(glob => glob !== null)
-
-    ignores.push(...globs)
+    ignores.push(...parseIgnoreContent(content, relativePath, cwd))
   }
 
   for (const file of filesGitModules) {
@@ -214,4 +221,24 @@ function parseGitSubmodules(content: string): string[] {
     .map(line => RE_SUBMODULE_PATH.exec(line))
     .filter(match => match !== null)
     .map(match => match![1].trim())
+}
+
+function parseIgnoreContent(content: string, relativePath: string, cwd: string): string[] {
+  return content.split(RE_NEWLINE)
+    .filter(line => line && !line.startsWith('#'))
+    .map(line => convertIgnorePatternToMinimatch(line))
+    .map(glob => relativeMinimatch(glob, relativePath, cwd))
+    .filter((glob): glob is string => glob !== null)
+}
+
+function findClosestGitDir(cwd: string): string | undefined {
+  let dir = cwd
+  while (true) {
+    if (fs.existsSync(join(dir, '.git')))
+      return join(dir, '.git')
+    const parent = dirname(dir)
+    if (parent === dir)
+      return undefined
+    dir = parent
+  }
 }
