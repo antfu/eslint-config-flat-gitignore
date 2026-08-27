@@ -33,7 +33,6 @@
     "lint": "eslint .",
     "prepublishOnly": "nr build",
     "release": "bumpp",
-    "pretest": "node test/setup-test-fixtures.mjs",
     "start": "tsx src/index.ts",
     "test": "vitest --pool=forks",
     "typecheck": "tsc --noEmit",
